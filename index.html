@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 해방일지</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="paper">
+    <div class="masthead">
+      <div class="masthead-meta" id="meta-left"></div>
+      <div class="masthead-title"><span>MY LIBERATION NOTES</span>해방일지</div>
+      <div class="masthead-meta right" id="meta-right"></div>
+    </div>
+    <div class="rules">
+      <div class="rule-item">조언하지 않기</div>
+      <div class="rule-item">판단하지 않기</div>
+      <div class="rule-item">그냥 들어주기만 하기</div>
+    </div>
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="switchTab('write')">일지 쓰기</button>
+      <button class="tab-btn" onclick="switchTab('feed')">오늘의 일지</button>
+      <button class="tab-btn" onclick="switchTab('sparkle')">오늘의 설렘</button>
+      <button class="tab-btn" onclick="switchTab('archive')">지난 호</button>
+    </div>
+    <div class="status-bar">
+      <div class="status-left">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-label">불러오는 중...</span>
+        &nbsp;·&nbsp; 오늘 일지 <strong id="today-count">0</strong>편 &nbsp;·&nbsp; 자정에 자동 발행
+      </div>
+      <div class="status-right">
+        <span class="next-issue" id="next-issue-label"></span>
+        <button class="btn-outline" onclick="showPublishModal()">지금 발행하기</button>
+      </div>
+    </div>
+
+    <!-- 일지 쓰기 -->
+    <div id="tab-write">
+      <div class="write-section">
+        <div class="write-header">
+          <div class="write-header-title">오늘의 해방일지</div>
+          <div class="write-header-sub" id="write-date"></div>
+        </div>
+        <div class="write-cols">
+          <div>
+            <div class="col-label">해방되고 싶은 것</div>
+            <textarea id="lib-text" placeholder="오늘 해방되고 싶은 것을 적어보세요.&#10;여기서는 아무도 조언하지 않아요."></textarea>
+          </div>
+          <div>
+            <div class="col-label">작성 안내</div>
+            <p class="guide-text">해방일지는 해방되고 싶은 것들을 그냥 꺼내놓는 공간입니다.<br><br>해결책이 아니에요.<br>그냥 말하고, 듣고, 끝.<br><br>자정이 되면 오늘의 일지들이 하나의 호(號)로 묶여 발행됩니다.</p>
+          </div>
+        </div>
+        <div class="write-footer">
+          <div class="anon-row" onclick="toggleAnon()">
+            <button class="toggle on" id="anon-toggle"><div class="knob"></div></button>
+            <span class="anon-label" id="anon-label">익명으로 공유</span>
+          </div>
+          <button class="btn-primary" id="submit-btn" onclick="submitEntry()">일지 남기기 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오늘의 일지 -->
+    <div id="tab-feed" style="display:none;">
+      <div class="feed-section">
+        <div class="feed-dateline" id="feed-dateline"></div>
+        <div class="feed-grid" id="feed-grid"></div>
+      </div>
+    </div>
+
+    <!-- 오늘의 설렘 -->
+    <div id="tab-sparkle" style="display:none;">
+      <div class="sparkle-section">
+        <div class="sparkle-top">
+          <div>
+            <div class="sparkle-headline">오늘 설레는 것들</div>
+            <div class="sparkle-sub">5분 동안 타이머를 켜고<br>마음속에 떠오르는 설레는 것들을<br>하나씩 나열해보세요.</div>
+          </div>
+          <div class="timer-block">
+            <div class="timer-label">남은 시간</div>
+            <div class="timer-num" id="timer-num">5:00</div>
+            <button class="timer-ctrl" id="timer-ctrl" onclick="toggleTimer()">시작</button>
+          </div>
+        </div>
+        <div class="sparkle-input-row">
+          <input class="sparkle-input" id="sparkle-in" placeholder="오늘 설레는 것..." onkeydown="if(event.key==='Enter')addSparkle()">
+          <button class="add-btn" onclick="addSparkle()">추가</button>
+        </div>
+        <div class="sparkle-list" id="sparkle-list"></div>
+        <button class="btn-primary" onclick="submitSparkle()">설렘 기록 남기기 →</button>
+      </div>
+    </div>
+
+    <!-- 지난 호 -->
+    <div id="tab-archive" style="display:none;">
+      <div class="archive-section">
+        <div class="archive-header">
+          <div class="archive-title">지난 호 아카이브</div>
+          <div class="write-header-sub" id="archive-sub"></div>
+        </div>
+        <div id="archive-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 발행 모달 -->
+  <div class="modal-backdrop" id="publish-modal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title" id="modal-issue-title"></div>
+        <button class="modal-close" onclick="closeModal('publish-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="publish-panel" id="modal-info"></div>
+        <div class="modal-actions">
+          <button class="btn-outline" onclick="closeModal('publish-modal')">취소</button>
+          <button class="btn-primary" id="do-publish-btn" onclick="doPublish()">발행하기 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 아카이브 모달 -->
+  <div class="modal-backdrop" id="archive-modal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title" id="arc-modal-title"></div>
+        <button class="modal-close" onclick="closeModal('archive-modal')">×</button>
+      </div>
+      <div class="modal-body" id="arc-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
