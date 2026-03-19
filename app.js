@@ -2,7 +2,7 @@
 // Supabase 연결 설정
 // =============================================
 const SUPABASE_URL = 'https://tbeikgwdbjmnomyskrpb.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_y5HBDSEuv2B1Xnqbu-JULw_kUGNxjVK';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiZWlrZ3dkYmptbm9teXNrcnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4OTAwODYsImV4cCI6MjA4OTQ2NjA4Nn0.MBc3JUVe7bFWsf5JIidqLD-EBk2_9I-4921-sohb9r8';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // =============================================
